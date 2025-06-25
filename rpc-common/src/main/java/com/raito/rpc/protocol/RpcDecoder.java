@@ -11,6 +11,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
+import protocol.RpcRequestProto;
+import protocol.RpcResponseProto;
 
 import java.util.List;
 
@@ -75,6 +77,6 @@ public class RpcDecoder extends ByteToMessageDecoder {
     }
 
     private Class<?> getBodyClass(byte messageType) {
-        return messageType == 0 ? RpcRequest.class : RpcResponse.class;
+        return messageType == 0 ? RpcRequestProto.RpcRequest.class : RpcResponseProto.RpcResponse.class;
     }
 }

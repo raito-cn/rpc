@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "protocol";
+option java_outer_classname = "RpcResponseProto";
+
+message RpcResponse {
+  string result = 1;
+  string errorMessage = 2;
+  bool success = 3;
+}
