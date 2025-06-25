@@ -6,11 +6,23 @@
         <groupId>com.raito.rpc</groupId>
         <artifactId>parent</artifactId>
         <version>v1.0.0</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <artifactId>rpc-server</artifactId>
     <version>${rpc.version}</version>
     <name>rpc-server</name>
     <description>rpc-server</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.raito.rpc</groupId>
+            <artifactId>rpc-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

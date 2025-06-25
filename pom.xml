@@ -80,6 +80,11 @@
                 <artifactId>lz4-java</artifactId>
                 <version>${lz4.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.raito.rpc</groupId>
+                <artifactId>rpc-common</artifactId>
+                <version>${rpc.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

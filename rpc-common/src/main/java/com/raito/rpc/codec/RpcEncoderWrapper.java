@@ -49,4 +49,17 @@ public class RpcEncoderWrapper {
      * 消息体
      */
     private Object body;
+
+    @Override
+    public String toString() {
+        return "RpcEncoderWrapper{" +
+                "magic=" + magic +
+                ", version=" + version +
+                ", mesType=" + mesType +
+                ", codecType=" + codecType +
+                ", compressType=" + compressType +
+                ", requestId=" + requestId +
+                ", body=" + body +
+                '}';
+    }
 }

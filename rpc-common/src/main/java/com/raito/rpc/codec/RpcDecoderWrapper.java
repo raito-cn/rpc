@@ -13,5 +13,13 @@ import lombok.Data;
 @Builder
 public class RpcDecoderWrapper {
     private RpcProtocol protocol; // 原始协议（含 payload）
-    private Object body;          // 解码后的对象（RpcRequest 或 RpcResponse）
+    private Object body;
+
+    @Override
+    public String toString() {
+        return "RpcDecoderWrapper{" +
+                "protocol=" + protocol +
+                ", body=" + body +
+                '}';
+    }
 }

@@ -1,7 +1,9 @@
 package com.raito.rpc.protocol;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author cn
@@ -10,6 +12,8 @@ import lombok.Data;
  */
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RpcProtocol {
     /**
      * 魔数 2

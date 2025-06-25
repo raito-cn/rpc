@@ -12,14 +12,16 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 
 /**
  * @author cn
- * @since 2025/6/25 18:17
  * @version 1.0
+ * @since 2025/6/25 18:17
  */
+@Slf4j
 public class RpcTestMain {
     public static void main(String[] args) throws InterruptedException {
         int port = 9000;
@@ -55,7 +57,9 @@ public class RpcTestMain {
                             @Override
                             protected void channelRead0(ChannelHandlerContext ctx, RpcDecoderWrapper msg) {
                                 String s = "服务端收到请求: " + msg;
-                                System.out.println(s);
+                                System.out.printf("[%s]: 收到消息:%s%n", ctx.channel().toString(), msg.toString());
+                                log.info("[{}]: 收到消息:{}", ctx.channel().id(), msg);
+
                                 RpcResponse rpcResponse = RpcResponse
                                         .builder()
                                         .success(true)
@@ -73,9 +77,11 @@ public class RpcTestMain {
                                         .build();
                                 ctx.writeAndFlush(wrapper);
                             }
+
                             @Override
                             public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                System.out.println("服务端连接激活：" + ctx.channel().remoteAddress());
+                                log.info("服务端连接激活：{}, channel: {}", ctx.channel().remoteAddress(), ctx.channel().toString());
+                                System.out.printf("服务端连接激活：%s, channel: %s\n", ctx.channel().remoteAddress(), ctx.channel().id());
                                 super.channelActive(ctx);
                             }
                         });
