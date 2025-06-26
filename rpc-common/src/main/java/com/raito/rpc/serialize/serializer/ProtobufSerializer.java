@@ -40,8 +40,8 @@ public class ProtobufSerializer implements Serializer {
             message = builder.build();
         } else if (obj instanceof RpcResponse response) {
             message = RpcResponseProto.RpcResponse.newBuilder()
-                    .setResult(JsonUtils.toJson(response.getResult()))
-                    .setErrorMessage(response.getErrorMessage())
+                    .setResult(JsonUtils.toJson(response.getResult()) == null ? "" : JsonUtils.toJson(response.getResult()))
+                    .setErrorMessage(response.getErrorMessage() == null ? "" : response.getErrorMessage())
                     .setSuccess(response.isSuccess())
                     .build();
         } else {

@@ -24,19 +24,19 @@ import java.util.Date;
 @Slf4j
 public class RpcTestMain {
     public static void main(String[] args) throws InterruptedException {
-        int port = 9000;
+        int port = 9001;
 
         // 启动 Netty 服务端
-        new Thread(() -> {
-            try {
-                startRpcServer(port);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-        // 睡一秒等服务端启动完
-        Thread.sleep(1000);
+//        new Thread(() -> {
+//            try {
+//                startRpcServer(port);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
+//
+//        // 睡一秒等服务端启动完
+//        Thread.sleep(1000);
 
         // 启动 Netty 客户端并发送 RpcRequest
         startRpcClient("localhost", port);
@@ -126,6 +126,11 @@ public class RpcTestMain {
                                         .body(req)
                                         .build();
                                 ctx.writeAndFlush(wrapper);
+                            }
+                            @Override
+                            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+                                System.out.println(cause.toString());
+                                ctx.close();  // 关闭连接
                             }
                         });
                     }

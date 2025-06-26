@@ -35,7 +35,6 @@ public class RpcEncoder extends MessageToByteEncoder<RpcEncoderWrapper> {
             out.writeInt(compress.length);
             out.writeBytes(compress);
         } catch (Exception e) {
-            ctx.close();
             log.error("encode error", e);
         }
     }
