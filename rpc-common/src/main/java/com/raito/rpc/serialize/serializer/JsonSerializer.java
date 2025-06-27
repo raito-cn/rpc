@@ -1,6 +1,6 @@
 package com.raito.rpc.serialize.serializer;
 
-import com.raito.rpc.utils.JsonUtils;
+import com.raito.rpc.util.JsonUtils;
 
 /**
  * @author cn

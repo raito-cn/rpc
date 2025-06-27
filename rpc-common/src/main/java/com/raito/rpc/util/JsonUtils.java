@@ -1,4 +1,4 @@
-package com.raito.rpc.utils;
+package com.raito.rpc.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

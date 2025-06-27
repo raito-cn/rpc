@@ -4,7 +4,7 @@ import com.google.protobuf.Message;
 import com.raito.rpc.exception.SerialException;
 import com.raito.rpc.protocol.RpcRequest;
 import com.raito.rpc.protocol.RpcResponse;
-import com.raito.rpc.utils.JsonUtils;
+import com.raito.rpc.util.JsonUtils;
 import protocol.RpcRequestProto;
 import protocol.RpcResponseProto;
 

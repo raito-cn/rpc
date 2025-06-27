@@ -19,7 +19,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline p = ch.pipeline();
 
-        p.addLast(new IdleStateHandler(60, 0, 0, TimeUnit.SECONDS))
+        // 空闲检测 5 分钟
+        p.addLast(new IdleStateHandler(60 * 5, 0, 0, TimeUnit.SECONDS))
                 .addLast(new RpcDecoder())
                 .addLast(new RpcEncoder())
                 .addLast(new HeartbeatHandler())

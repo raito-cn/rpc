@@ -5,7 +5,8 @@ option java_outer_classname = "RpcRequestProto";
 
 message RpcRequest {
   string className = 1;
-  string methodName = 2;
-  repeated string paramTypes = 3;
-  repeated string args = 4;
+  string returnType = 2;
+  string methodName = 3;
+  repeated string paramTypes = 4;
+  repeated string args = 5;
 }
