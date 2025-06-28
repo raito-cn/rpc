@@ -36,6 +36,7 @@
         <protobuf.version>4.31.1</protobuf.version>
         <lz4.version>1.8.0</lz4.version>
         <netty.version>4.2.2.Final</netty.version>
+        <asm.version>9.8</asm.version>
     </properties>
 
     <dependencyManagement>
@@ -84,6 +85,11 @@
                 <groupId>com.raito.rpc</groupId>
                 <artifactId>rpc-common</artifactId>
                 <version>${rpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
