@@ -1,0 +1,25 @@
+package com.raito.rpc.server.strategy;
+
+import com.raito.rpc.server.helper.InvokeHelper;
+import com.raito.rpc.server.classloader.RpcClassloader;
+import com.raito.rpc.server.classloader.RpcProxyClass;
+
+/**
+ * @author raito
+ * @since 2025/6/29
+ */
+public abstract class RpcRemoteStrategy<U> {
+    public final U getResult(InvokeHelper helper) {
+        try {
+            RpcProxyClass instance = RpcClassloader.getProxyInstance(helper.getClassName());
+            Object result = instance.invoke(helper.getReturnType(), helper.getMethodName(), helper.getArgTypes(), helper.getArgs());
+            return ok(result);
+        } catch (Exception e) {
+            return error("远程调用出错, 原因:" + e.getMessage());
+        }
+    }
+
+    protected abstract U ok(Object result);
+
+    protected abstract U error(String errorMessage);
+}

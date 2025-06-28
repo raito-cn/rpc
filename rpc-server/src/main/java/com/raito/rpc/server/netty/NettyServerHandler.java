@@ -3,12 +3,14 @@ package com.raito.rpc.server.netty;
 import com.raito.rpc.common.codec.RpcDecoderWrapper;
 import com.raito.rpc.common.codec.RpcEncoderWrapper;
 import com.raito.rpc.common.constant.RpcConstant;
-import com.raito.rpc.common.protocol.RpcResponse;
+import com.raito.rpc.server.strategy.RpcRemoteStrategy;
+import com.raito.rpc.server.strategy.RpcRequestProtoRemoteStrategy;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 import com.raito.rpc.server.factory.RpcResponseFactory;
+import protocol.RpcResponseProto;
 
 /**
  * @author raito
@@ -16,11 +18,13 @@ import com.raito.rpc.server.factory.RpcResponseFactory;
  */
 @Slf4j
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcDecoderWrapper> {
+    public static final RpcRemoteStrategy<RpcResponseProto.RpcResponse> DEFAULT_RPC_REMOTE_STRATEGY = new RpcRequestProtoRemoteStrategy();
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcDecoderWrapper msg) {
         Channel channel = ctx.channel();
-        log.debug("[{}]: 收到消息:{}", channel.id(), msg.toString());
-        RpcResponse rpcResponse = RpcResponseFactory.createRpcResponse(msg);
+        log.info("[{}]: 收到消息:{}", channel.id(), msg.toString());
+        Object rpcResponse = RpcResponseFactory.createRpcResponse(msg, DEFAULT_RPC_REMOTE_STRATEGY);
         RpcEncoderWrapper wrapper = RpcEncoderWrapper.builder()
                 .magic(RpcConstant.MAGIC)
                 .version((byte) 1)

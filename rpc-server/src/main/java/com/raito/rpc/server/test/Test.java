@@ -3,12 +3,13 @@ package com.raito.rpc.server.test;
 import com.raito.rpc.server.annotation.RpcProxy;
 import com.raito.rpc.server.classloader.RpcClassloader;
 import com.raito.rpc.server.classloader.RpcProxyClass;
+import com.raito.rpc.server.manager.NettyServerManager;
 import com.raito.rpc.server.scanner.ClassScanner;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * @author raito
@@ -22,9 +23,10 @@ public class Test {
 
     @RpcProxy
     public Object test1(String s) {
-        return "s" + "proxy";
+        return s + "proxy";
     }
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws InterruptedException {
         Map<Class<?>, List<Method>> scan = ClassScanner.scan("com.raito.rpc.server", RpcProxy.class);
         for (Map.Entry<Class<?>, List<Method>> entry : scan.entrySet()) {
             System.out.println(entry.getKey().getName() + " -> " + entry.getValue().toString());
@@ -33,7 +35,9 @@ public class Test {
         System.out.println("代理成功!");
         RpcProxyClass proxyInstance = RpcClassloader.getProxyInstance("com.raito.rpc.server.test.Test");
         proxyInstance.invoke("void", "test", null, null);
-        Object invoke1 = proxyInstance.invoke(Object.class.getName(), "test1", new String[]{String.class.getName()}, new Object[]{"s"});
-        System.out.println(invoke1);
+
+        new NettyServerManager().start();
+        Scanner sc = new Scanner(System.in);
+        sc.nextLine();
     }
 }

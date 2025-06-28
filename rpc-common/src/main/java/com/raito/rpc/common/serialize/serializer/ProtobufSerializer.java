@@ -26,17 +26,26 @@ public class ProtobufSerializer implements Serializer {
             case RpcRequest request -> {
                 RpcRequestProto.RpcRequest.Builder builder = RpcRequestProto.RpcRequest.newBuilder()
                         .setClassName(request.getClassName())
-                        .setMethodName(request.getMethodName());
+                        .setMethodName(request.getMethodName())
+                        .setReturnType(request.getReturnType());
 
-                List<String> paramTypeNames = Arrays.stream(request.getParamTypes())
-                        .map(Class::getName)
-                        .collect(Collectors.toList());
-
+                List<String> paramTypeNames;
+                if (request.getArgs() != null) {
+                    paramTypeNames = Arrays.stream(request.getParamTypes())
+                            .collect(Collectors.toList());
+                } else {
+                    paramTypeNames = List.of();
+                }
                 builder.addAllParamTypes(paramTypeNames);
 
-                List<String> argValues = Arrays.stream(request.getArgs())
-                        .map(JsonUtils::toJson)  // 你可以改成 JsonUtils.toJson(...) 更安全
-                        .collect(Collectors.toList());
+                List<String> argValues;
+                if (request.getArgs() != null) {
+                    argValues = Arrays.stream(request.getArgs())
+                            .map(arg -> (arg instanceof String) ? (String) arg : JsonUtils.toJson(arg))
+                            .collect(Collectors.toList());
+                } else {
+                    argValues = List.of();
+                }
                 builder.addAllArgs(argValues);
                 message = builder.build();
             }
@@ -46,7 +55,8 @@ public class ProtobufSerializer implements Serializer {
                     .setSuccess(response.isSuccess())
                     .build();
             case Message msg -> message = msg;
-            case null, default -> throw new SerialException("不支持的对象类型: " + obj.getClass().getName());
+            case null -> throw new SerialException("对象为空");
+            default -> throw new SerialException("不支持的对象类型: " + obj.getClass().getName());
         }
         return message.toByteArray();
     }

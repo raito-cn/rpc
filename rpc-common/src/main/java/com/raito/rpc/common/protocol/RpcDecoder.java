@@ -3,6 +3,7 @@ package com.raito.rpc.common.protocol;
 import com.raito.rpc.common.codec.RpcDecoderWrapper;
 import com.raito.rpc.common.constant.RpcConstant;
 import com.raito.rpc.common.exception.RpcDecodeException;
+import com.raito.rpc.common.exception.SerialException;
 import com.raito.rpc.common.serialize.compressor.Compressor;
 import com.raito.rpc.common.serialize.enums.CodecType;
 import com.raito.rpc.common.serialize.enums.CompressType;
@@ -18,8 +19,8 @@ import java.util.List;
 
 /**
  * @author cn
- * @since 2025/6/25 15:58
  * @version 1.0
+ * @since 2025/6/25 15:58
  */
 @Slf4j
 public class RpcDecoder extends ByteToMessageDecoder {
@@ -64,7 +65,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
             Compressor compressor = CompressType.valueOf(compressType).getCompressor();
             byte[] bytes = compressor.decompress(payload);
             Serializer serializer = CodecType.valueOf(codecType).getSerializer();
-            Object body = serializer.deserialize(bytes, getBodyClass(messageType));
+            Object body = serializer.deserialize(bytes, getBodyClass(codecType, messageType));
             RpcDecoderWrapper wrapper = RpcDecoderWrapper.builder()
                     .body(body)
                     .protocol(protocol)
@@ -76,7 +77,13 @@ public class RpcDecoder extends ByteToMessageDecoder {
         }
     }
 
-    private Class<?> getBodyClass(byte messageType) {
-        return messageType == 0 ? RpcRequestProto.RpcRequest.class : RpcResponseProto.RpcResponse.class;
+    private Class<?> getBodyClass(byte codecType, byte messageType) {
+        if (codecType == 1) {
+            return messageType == 0 ? RpcRequestProto.RpcRequest.class : RpcResponseProto.RpcResponse.class;
+        } else if (codecType == 2) {
+            return messageType == 0 ? RpcRequest.class : RpcResponse.class;
+        } else {
+            throw new SerialException("不支持的类型转换!");
+        }
     }
 }
