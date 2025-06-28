@@ -1,10 +1,9 @@
 package com.raito.rpc.server.classloader;
 
+import com.raito.rpc.common.exception.ProxyException;
 import com.raito.rpc.server.factory.BeanFactory;
 import com.raito.rpc.server.factory.ProxyGenerator;
-import lombok.SneakyThrows;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -23,18 +22,21 @@ public class RpcClassloader extends ClassLoader {
      * class中的每一个方法都整合为invoke if-else的形式的动态代理类
      * @param map 需要代理的类和方法信息
      */
-    @SneakyThrows
-    public static void register(Map<Class<?>, List<Method>> map) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        for (var entry : map.entrySet()) {
-            Class<?> originalClass = entry.getKey();
-            List<Method> methods = entry.getValue();
-            if (originalClass == null || methods == null || methods.isEmpty()) continue;
+    public static void register(Map<Class<?>, List<Method>> map) {
+        try {
+            for (var entry : map.entrySet()) {
+                Class<?> originalClass = entry.getKey();
+                List<Method> methods = entry.getValue();
+                if (originalClass == null || methods == null || methods.isEmpty()) continue;
 
-            byte[] proxyBytes = ProxyGenerator.generateProxyClass(originalClass, methods);
-            Class<? extends RpcProxyClass> proxyClass = CLASS_LOADER.defineClass(ProxyGenerator.getClassProxyName(originalClass, false), proxyBytes);
-            Object targetInstance = BeanFactory.getBean(originalClass);
-            RpcProxyClass proxyInstance = proxyClass.getConstructor(Object.class).newInstance(targetInstance);
-            PROXY_INSTANCES.put(originalClass.getName(), proxyInstance);
+                byte[] proxyBytes = ProxyGenerator.generateProxyClass(originalClass, methods);
+                Class<? extends RpcProxyClass> proxyClass = CLASS_LOADER.defineClass(ProxyGenerator.getClassProxyName(originalClass, false), proxyBytes);
+                Object targetInstance = BeanFactory.getBean(originalClass);
+                RpcProxyClass proxyInstance = proxyClass.getConstructor(Object.class).newInstance(targetInstance);
+                PROXY_INSTANCES.put(originalClass.getName(), proxyInstance);
+            }
+        } catch (Exception e) {
+            throw new ProxyException(e);
         }
     }
 

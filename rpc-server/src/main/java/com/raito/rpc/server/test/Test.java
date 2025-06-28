@@ -24,7 +24,7 @@ public class Test {
     public Object test1(String s) {
         return "s" + "proxy";
     }
-    public static void main(String[] args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static void main(String[] args) {
         Map<Class<?>, List<Method>> scan = ClassScanner.scan("com.raito.rpc.server", RpcProxy.class);
         for (Map.Entry<Class<?>, List<Method>> entry : scan.entrySet()) {
             System.out.println(entry.getKey().getName() + " -> " + entry.getValue().toString());
@@ -35,6 +35,5 @@ public class Test {
         proxyInstance.invoke("void", "test", null, null);
         Object invoke1 = proxyInstance.invoke(Object.class.getName(), "test1", new String[]{String.class.getName()}, new Object[]{"s"});
         System.out.println(invoke1);
-
     }
 }
