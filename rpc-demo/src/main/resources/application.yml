@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: rpc-demo
+
+netty:
+  server:
+    port: 9090

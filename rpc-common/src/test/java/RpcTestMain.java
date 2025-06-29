@@ -24,7 +24,7 @@ import java.util.Date;
 @Slf4j
 public class RpcTestMain {
     public static void main(String[] args) throws InterruptedException {
-        int port = 9001;
+        int port = 9090;
 
         // 启动 Netty 服务端
 //        new Thread(() -> {
@@ -111,11 +111,11 @@ public class RpcTestMain {
                             @Override
                             public void channelActive(ChannelHandlerContext ctx) {
                                 RpcRequest req = RpcRequest.builder()
-                                        .className("com.raito.rpc.server.test.Test")
-                                        .methodName("test1")
-                                        .returnType(Object.class.getName())
-                                        .paramTypes(new String[]{String.class.getName()})
-                                        .args(new Object[]{"proxy proxy "})
+                                        .className("com.raito.rpc.demo.method.MethodList")
+                                        .methodName("getName")
+                                        .returnType(String.class.getName())
+                                        .paramTypes(new String[]{})
+                                        .args(new Object[]{})
                                         .build();
                                 RpcEncoderWrapper wrapper = RpcEncoderWrapper.builder()
                                         .magic(RpcConstant.MAGIC)

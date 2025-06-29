@@ -38,6 +38,7 @@ public class ApplicationStartedListener {
         String basePackage = mainAppClass.getPackage().getName();
         Map<Class<?>, List<Method>> scan = ClassScanner.scan(basePackage, RpcProxy.class);
         RpcClassloader.register(scan);
+        log.info("扫描基包{} 动态代理类完成!", basePackage);
         log.debug(scan.entrySet().stream()
                 .map(entry -> entry.getKey().getSimpleName() + ": " +
                         entry.getValue().stream()

@@ -1,6 +1,7 @@
 package com.raito.rpc.server.autoconfig;
 
 import com.raito.rpc.server.event.ApplicationStartedListener;
+import com.raito.rpc.server.factory.SpringContextHolder;
 import com.raito.rpc.server.helper.NettyStartHelper;
 import com.raito.rpc.server.manager.NettyServerManager;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -25,5 +26,10 @@ public class NettyServerAutoConfig {
     @Bean
     public ApplicationStartedListener applicationStartedListener(NettyStartHelper nettyStartHelper) {
         return new ApplicationStartedListener(nettyStartHelper);
+    }
+
+    @Bean
+    public SpringContextHolder springContextHolder() {
+        return new SpringContextHolder();
     }
 }
