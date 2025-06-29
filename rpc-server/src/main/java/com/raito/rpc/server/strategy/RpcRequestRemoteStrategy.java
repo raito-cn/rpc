@@ -14,6 +14,7 @@ public class RpcRequestRemoteStrategy extends RpcRemoteStrategy<RpcResponse> {
                 .success(true)
                 .result(result)
                 .errorMessage(null)
+                .code(200)
                 .build();
     }
 
@@ -22,6 +23,7 @@ public class RpcRequestRemoteStrategy extends RpcRemoteStrategy<RpcResponse> {
         return RpcResponse.builder()
                 .success(false)
                 .result(null)
+                .code(500)
                 .errorMessage(errorMessage)
                 .build();
     }

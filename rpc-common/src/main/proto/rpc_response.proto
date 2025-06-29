@@ -7,4 +7,5 @@ message RpcResponse {
   string result = 1;
   string errorMessage = 2;
   bool success = 3;
+  int32 code = 4;
 }

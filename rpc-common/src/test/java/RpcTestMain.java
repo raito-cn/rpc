@@ -115,7 +115,7 @@ public class RpcTestMain {
                                         .methodName("test1")
                                         .returnType(Object.class.getName())
                                         .paramTypes(new String[]{String.class.getName()})
-                                        .args(new String[]{"proxy proxy "})
+                                        .args(new Object[]{"proxy proxy "})
                                         .build();
                                 RpcEncoderWrapper wrapper = RpcEncoderWrapper.builder()
                                         .magic(RpcConstant.MAGIC)

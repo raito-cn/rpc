@@ -19,6 +19,7 @@ public class RpcResponse {
     private Object result;        // 调用结果
     private String errorMessage;  // 异常信息（如果有）
     private boolean success;      // 是否成功
+    private int code;             // 状态码
 
     @Override
     public String toString() {
@@ -26,6 +27,7 @@ public class RpcResponse {
                 "result=" + result +
                 ", errorMessage='" + errorMessage + '\'' +
                 ", success=" + success +
+                ", code=" + code +
                 '}';
     }
 }

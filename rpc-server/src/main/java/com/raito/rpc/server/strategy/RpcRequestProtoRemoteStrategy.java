@@ -12,6 +12,7 @@ public class RpcRequestProtoRemoteStrategy extends RpcRemoteStrategy<RpcResponse
         return RpcResponseProto.RpcResponse.newBuilder()
                 .setSuccess(true)
                 .setResult(result == null ? "" : result.toString())
+                .setCode(200)
                 .build();
     }
 
@@ -20,6 +21,7 @@ public class RpcRequestProtoRemoteStrategy extends RpcRemoteStrategy<RpcResponse
         return RpcResponseProto.RpcResponse.newBuilder()
                 .setSuccess(false)
                 .setResult(errorMessage)
+                .setCode(500)
                 .build();
     }
 

@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
  * @since 2025/6/28
  */
 public class BeanFactory {
-    public static Object getBean(Class<?> originalClass) {
+    public static <T> T getBean(Class<T> originalClass) {
         try {
             try {
                 if (SpringContextHolder.getContext() != null) {

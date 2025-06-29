@@ -5,6 +5,7 @@ import com.raito.rpc.common.codec.RpcEncoderWrapper;
 import com.raito.rpc.common.constant.RpcConstant;
 import com.raito.rpc.server.strategy.RpcRemoteStrategy;
 import com.raito.rpc.server.strategy.RpcRequestProtoRemoteStrategy;
+import com.raito.rpc.server.thread.AsyncThread;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -24,21 +25,33 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcDecoderWr
     protected void channelRead0(ChannelHandlerContext ctx, RpcDecoderWrapper msg) {
         Channel channel = ctx.channel();
         log.info("[{}]: 收到消息:{}", channel.id(), msg.toString());
-        Object rpcResponse = RpcResponseFactory.createRpcResponse(msg, DEFAULT_RPC_REMOTE_STRATEGY);
-        RpcEncoderWrapper wrapper = RpcEncoderWrapper.builder()
-                .magic(RpcConstant.MAGIC)
-                .version((byte) 1)
-                .requestId(msg.getProtocol().getRequestId())
-                .mesType((byte) 1)
-                .codecType((byte) 1)
-                .compressType((byte) 2)
-                .body(rpcResponse)
-                .build();
-        if (channel.isActive() && channel.isWritable()) {
-            channel.writeAndFlush(wrapper);
-        } else {
-            log.info("通道不可写或已关闭，不能写数据");
-        }
+        async(msg, channel);
+    }
+
+    private static void async(RpcDecoderWrapper msg, Channel channel) {
+        AsyncThread.getNettyAsyncThread()
+                .execute(() -> {
+                    try {
+                        Object rpcResponse = RpcResponseFactory.createRpcResponse(msg, DEFAULT_RPC_REMOTE_STRATEGY);
+                        RpcEncoderWrapper wrapper = RpcEncoderWrapper.builder()
+                                .magic(RpcConstant.MAGIC)
+                                .version((byte) 1)
+                                .requestId(msg.getProtocol().getRequestId())
+                                .mesType((byte) 1)
+                                .codecType((byte) 1)
+                                .compressType((byte) 2)
+                                .body(rpcResponse)
+                                .build();
+                        if (channel.isActive() && channel.isWritable()) {
+                            channel.writeAndFlush(wrapper);
+                            log.info("响应消息:{}", wrapper);
+                        } else {
+                            log.info("通道不可写或已关闭，不能写数据");
+                        }
+                    } catch (Exception e) {
+                        log.error("异步处理请求失败: {}", msg, e);
+                    }
+                });
     }
 
     @Override
