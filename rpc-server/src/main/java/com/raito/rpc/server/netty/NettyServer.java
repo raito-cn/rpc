@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author cn
- * @since 2025/6/26 10:28
  * @version 1.0
+ * @since 2025/6/26 10:28
  */
 @SuppressWarnings("all")
 @NoArgsConstructor
@@ -74,10 +74,11 @@ public class NettyServer {
         }
 
         if (boss == null || boss.isShuttingDown() || boss.isShutdown() || boss.isTerminated()) {
-            boss = new NioEventLoopGroup();
+            boss = new NioEventLoopGroup(1);
         }
         if (worker == null || worker.isShuttingDown() || worker.isShutdown() || worker.isTerminated()) {
-            worker = new NioEventLoopGroup();
+            int cores = Runtime.getRuntime().availableProcessors();
+            worker = new NioEventLoopGroup(cores << 1);
         }
 
         bootstrap.group(boss, worker)
