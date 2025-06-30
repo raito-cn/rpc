@@ -24,7 +24,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcDecoderWr
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcDecoderWrapper msg) {
         Channel channel = ctx.channel();
-        log.info("[{}]: 收到消息:{}", channel.id(), msg.toString());
+        log.info("[{}]: 收到消息:{}", channel.id(), msg);
         async(msg, channel);
     }
 

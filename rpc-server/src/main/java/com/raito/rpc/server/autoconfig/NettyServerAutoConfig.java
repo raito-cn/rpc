@@ -4,6 +4,8 @@ import com.raito.rpc.server.event.ApplicationStartedListener;
 import com.raito.rpc.server.factory.SpringContextHolder;
 import com.raito.rpc.server.helper.NettyStartHelper;
 import com.raito.rpc.server.manager.NettyServerManager;
+import com.raito.rpc.server.strategy.RpcClassScannerProxyStrategy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.Bean;
  * @since 2025/6/29
  */
 @AutoConfiguration
+@RequiredArgsConstructor
 public class NettyServerAutoConfig {
     @Bean
     public NettyServerManager nettyServerManager() {
@@ -24,12 +27,17 @@ public class NettyServerAutoConfig {
     }
 
     @Bean
-    public ApplicationStartedListener applicationStartedListener(NettyStartHelper nettyStartHelper) {
-        return new ApplicationStartedListener(nettyStartHelper);
+    public ApplicationStartedListener applicationStartedListener() {
+        return new ApplicationStartedListener();
     }
 
     @Bean
     public SpringContextHolder springContextHolder() {
         return new SpringContextHolder();
+    }
+
+    @Bean
+    public RpcClassScannerProxyStrategy rpcClassScannerProxyStrategy() {
+        return new RpcClassScannerProxyStrategy();
     }
 }

@@ -11,39 +11,21 @@ import java.security.MessageDigest;
  * @since 2025/6/27 18:06
  */
 public abstract class RpcProxyClass {
-    protected final Object targetInstance;
-
-    public RpcProxyClass(Object targetInstance) {
-        this.targetInstance = targetInstance;
-    }
-
     /**
      * 动态代理这个方法 method_name args做成一个 key 用switch调用真实的逻辑
      *
-     * @param returnType 方法返回类型
      * @param methodName 方法名
-     * @param argTypes   方法参数
      * @param args       参数值
      * @return 返回结果
      */
-    public abstract Object invoke(String returnType, String methodName, String[] argTypes, Object[] args);
+    public abstract Object invoke(String methodName, Object[] args);
 
 
-    public static String encode(String returnType, String methodName, String[] argTypes) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("returnType=").append(returnType)
-                .append(",methodName=").append(methodName);
-        if (argTypes != null) {
-            for (var argType : argTypes) {
-                sb.append(",argType=").append(argType);
-            }
-        }
-        String originalString = sb.toString();
-
+    public static String encode(String methodName) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(originalString.getBytes(StandardCharsets.UTF_8));
-            return bytesToHex(hash);
+            byte[] hash = digest.digest(methodName.getBytes(StandardCharsets.UTF_8));
+            return bytesToHex(hash).substring(0, 16);
         } catch (Exception e) {
             throw new KeyException("摘要失败", e);
         }

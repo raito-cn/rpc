@@ -20,10 +20,9 @@ public class RpcResponseFactory {
     private static InvokeHelper getInvokeHelper(RpcDecoderWrapper msg) {
         Object obj = msg.getBody();
         if (obj instanceof RpcRequestProto.RpcRequest request) {
-            return new InvokeHelper(request.getClassName(), request.getReturnType(), request.getMethodName(), request.getParamTypesList().toArray(new String[0]),
-                    request.getArgsList().toArray(new String[0]));
+            return new InvokeHelper(request.getServer(), request.getMethodName(), request.getArgsList().toArray(new String[0]));
         } else if (obj instanceof RpcRequest request) {
-            return new InvokeHelper(request.getClassName(), request.getReturnType(), request.getMethodName(), request.getParamTypes(), request.getArgs());
+            return new InvokeHelper(request.getServer(), request.getMethodName(), request.getArgs());
         } else {
             throw new SerialException("不支持的协议");
         }

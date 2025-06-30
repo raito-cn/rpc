@@ -11,8 +11,8 @@ import com.raito.rpc.server.classloader.RpcProxyClass;
 public abstract class RpcRemoteStrategy<U> {
     public final U getResult(InvokeHelper helper) {
         try {
-            RpcProxyClass instance = RpcClassloader.getProxyInstance(helper.getClassName());
-            Object result = instance.invoke(helper.getReturnType(), helper.getMethodName(), helper.getArgTypes(), helper.getArgs());
+            RpcProxyClass instance = RpcClassloader.getProxyInstance(helper.getServer());
+            Object result = instance.invoke(helper.getMethodName(), helper.getArgs());
             return ok(result);
         } catch (Exception e) {
             return error("远程调用出错, 原因:" + e.getMessage());

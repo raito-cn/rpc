@@ -1,10 +1,13 @@
 package com.raito.rpc.server.classloader;
 
 import com.raito.rpc.common.exception.ProxyException;
-import com.raito.rpc.server.factory.BeanFactory;
+import com.raito.rpc.server.event.ApplicationStartedListener;
 import com.raito.rpc.server.factory.ProxyGenerator;
+import com.raito.rpc.server.helper.MethodHelper;
 
-import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * @author cn
@@ -25,27 +29,35 @@ public class RpcClassloader extends ClassLoader {
     /**
      * class中的每一个方法都整合为invoke if-else的形式的动态代理类
      *
-     * @param map 需要代理的类和方法信息
+     * @param helpers 需要代理的类
      */
-    public static void register(Map<Class<?>, List<Method>> map) {
+    public static void register(List<MethodHelper> helpers) {
         try (ExecutorService service = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Future<?>> futures = new ArrayList<>();
 
-            for (var entry : map.entrySet()) {
-                Class<?> originalClass = entry.getKey();
-                List<Method> methods = entry.getValue();
-                if (originalClass == null || methods == null || methods.isEmpty()) continue;
+            Map<String, List<MethodHelper>> methodMap = helpers.
+                    stream()
+                    .collect(Collectors.groupingBy(MethodHelper::getServer));
 
+            for (var entry : methodMap.entrySet()) {
+                String server = entry.getKey();
+                List<MethodHelper> methods = entry.getValue();
+                if (server == null || methods == null || methods.isEmpty()) continue;
                 futures.add(service.submit(() -> {
                     try {
-                        byte[] proxyBytes = ProxyGenerator.generateProxyClass(originalClass, methods);
+                        byte[] proxyBytes = ProxyGenerator.generateProxyClass(server, methods);
+                        String classFile = "proxy/" + ProxyGenerator.RPC_PROXY_CLASS_INTERNAL_NAME + server + "$Proxy" + ".class";
+                        Path workingDir = ApplicationStartedListener.realUrl; // 当前 JVM 工作目录
+                        Path path = Paths.get(workingDir.toString(), classFile);
+                        Files.createDirectories(path.getParent());
+                        Files.write(path, proxyBytes);
+
                         Class<? extends RpcProxyClass> proxyClass =
-                                CLASS_LOADER.defineClass(ProxyGenerator.getClassProxyName(originalClass, false), proxyBytes);
-                        Object targetInstance = BeanFactory.getBean(originalClass);
+                                CLASS_LOADER.defineClass(ProxyGenerator.RPC_PROXY_CLASS_INTERNAL_JVM_NAME + server + "$Proxy", proxyBytes);
                         RpcProxyClass proxyInstance = proxyClass
-                                .getConstructor(Object.class)
-                                .newInstance(targetInstance);
-                        PROXY_INSTANCES.put(originalClass.getName(), proxyInstance);
+                                .getConstructor()
+                                .newInstance();
+                        PROXY_INSTANCES.put(server, proxyInstance);
                     } catch (Exception e) {
                         throw new ProxyException(e);
                     }
@@ -66,7 +78,7 @@ public class RpcClassloader extends ClassLoader {
         return (Class<? extends RpcProxyClass>) super.defineClass(name, b, 0, b.length);
     }
 
-    public static RpcProxyClass getProxyInstance(String className) {
-        return PROXY_INSTANCES.get(className);
+    public static RpcProxyClass getProxyInstance(String server) {
+        return PROXY_INSTANCES.get(server);
     }
 }

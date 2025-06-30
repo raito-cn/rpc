@@ -4,15 +4,15 @@ import java.lang.annotation.*;
 
 /**
  * @author cn
- * @since 2025/6/27 16:08
+ * @since 2025/6/30 11:19
  * @version 1.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Documented
 @Inherited
-public @interface RpcProxy {
-    String server() default "";
+public @interface RpcProxyMethod {
+    String methodName() default "";
 
-    boolean all() default false;
+    String server() default "";
 }

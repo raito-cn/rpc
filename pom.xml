@@ -25,6 +25,7 @@
         <module>rpc-register-redis</module>
         <module>rpc-server</module>
         <module>rpc-transport</module>
+        <module>rpc-demo</module>
     </modules>
 
     <properties>

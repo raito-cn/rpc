@@ -18,19 +18,15 @@ import java.util.Arrays;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RpcRequest {
-    private String className;     // 要调用的类名（接口名）
-    private String returnType;// 方法返回类型
+    private String server;     // 要调用的类名（接口名）
     private String methodName;    // 要调用的方法名
-    private String[] paramTypes;// 方法参数类型
-    private Object[] args;      // 方法参数值
+    private String[] args;      // 方法参数值
 
     @Override
     public String toString() {
         return "RpcRequest{" +
-                "className='" + className + '\'' +
-                ", returnType='" + returnType + '\'' +
+                "server='" + server + '\'' +
                 ", methodName='" + methodName + '\'' +
-                ", paramTypes=" + Arrays.toString(paramTypes) +
                 ", args=" + Arrays.toString(args) +
                 '}';
     }

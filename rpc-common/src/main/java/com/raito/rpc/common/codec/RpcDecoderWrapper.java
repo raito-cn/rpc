@@ -19,7 +19,7 @@ public class RpcDecoderWrapper {
     public String toString() {
         return "RpcDecoderWrapper{" +
                 "protocol=" + protocol +
-                ", body=" + body +
+                ", \nbody=" + body +
                 '}';
     }
 }

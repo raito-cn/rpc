@@ -111,11 +111,14 @@ public class RpcTestMain {
                             @Override
                             public void channelActive(ChannelHandlerContext ctx) {
                                 RpcRequest req = RpcRequest.builder()
-                                        .className("com.raito.rpc.demo.method.MethodList")
-                                        .methodName("getName")
-                                        .returnType(String.class.getName())
-                                        .paramTypes(new String[]{})
-                                        .args(new Object[]{})
+                                        .server("method")
+                                        .methodName("methodList")
+                                        .args(new String[]{"""
+                                            {
+                                                "name": "raito",
+                                                "methodName": "hello"
+                                            }
+                                            """})
                                         .build();
                                 RpcEncoderWrapper wrapper = RpcEncoderWrapper.builder()
                                         .magic(RpcConstant.MAGIC)

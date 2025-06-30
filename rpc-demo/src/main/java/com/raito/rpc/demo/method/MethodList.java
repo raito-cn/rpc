@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Data
-@RpcProxy
+@RpcProxy(all = true)
 public class MethodList {
     @Value("${name:method_list}")
     private String name;
