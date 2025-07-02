@@ -12,7 +12,8 @@ import com.raito.rpc.server.annotation.RpcProxyMethod;
 @RpcProxy(server = "method")
 public class MethodServer {
     @RpcProxyMethod
-    public String methodList(MethodList list) {
+    public String methodList(MethodList list) throws InterruptedException {
+        Thread.sleep(3000);
         return JsonUtils.toJson(list);
     }
 }

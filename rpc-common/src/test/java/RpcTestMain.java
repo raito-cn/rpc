@@ -105,7 +105,7 @@ public class RpcTestMain {
                         ch.pipeline().addLast(new SimpleChannelInboundHandler<RpcDecoderWrapper>() {
                             @Override
                             protected void channelRead0(ChannelHandlerContext ctx, RpcDecoderWrapper msg) {
-                                System.out.println("客户端收到响应: " + msg);
+                                System.out.println("客户端收到响应: " + msg.getBody());
                             }
 
                             @Override
@@ -115,7 +115,7 @@ public class RpcTestMain {
                                         .methodName("methodList")
                                         .args(new String[]{"""
                                             {
-                                                "name": "raito",
+                                                "name": "一只猪",
                                                 "methodName": "hello"
                                             }
                                             """})
