@@ -3,6 +3,7 @@ package com.raito.rpc.server.netty;
 import com.raito.rpc.common.codec.RpcDecoderWrapper;
 import com.raito.rpc.common.codec.RpcEncoderWrapper;
 import com.raito.rpc.common.constant.RpcConstant;
+import com.raito.rpc.common.context.MessageScopedContext;
 import com.raito.rpc.common.util.MessageUtils;
 import com.raito.rpc.server.factory.BeanFactory;
 import com.raito.rpc.server.helper.SeedMessageHelper;
@@ -31,7 +32,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcDecoderWr
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcDecoderWrapper msg) {
         Channel channel = ctx.channel();
-        log.info("[{}]: 收到消息:{}", channel.id(), MessageUtils.decodeOctalEscapes(msg.getBody()));
+        log.info("channel: [{}]: 收到消息:{}", channel.id(), MessageUtils.decodeOctalEscapes(msg.getBody()));
         async(msg, channel);
     }
 
@@ -39,9 +40,16 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcDecoderWr
         // 异步执行 但是需要有一个超时兜底机制，如超过60s 直接返回响应超时，并且就算是用虚拟线程，也需要做netty限流，防止请求过多打爆JVM
         SeedMessageHelper helper = new SeedMessageHelper();
         Future<?> submit = AsyncThread.getNettyAsyncThread()
-                .submit(() -> seedMessage(msg, channel, helper));
+                .submit(() -> MessageScopedContext.set(msg.getProtocol().getRequestId(), () -> {
+                    seedMessage(msg, channel, helper);
+                    return null;
+                }));
         // 超时兜底
-        AsyncThread.getNettyAsyncThread().submit(() -> checkTimeout(msg, channel, submit, helper));
+        AsyncThread.getNettyAsyncThread().submit(() ->
+                MessageScopedContext.set(msg.getProtocol().getRequestId(), () -> {
+                    checkTimeout(msg, channel, submit, helper);
+                    return null;
+                }));
     }
 
     private static void checkTimeout(RpcDecoderWrapper msg, Channel channel, Future<?> submit, SeedMessageHelper helper) {
@@ -67,20 +75,21 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcDecoderWr
             if (channel.isActive() && channel.isWritable()) {
                 channel.writeAndFlush(timeoutResp);
             }
-            log.warn("请求处理超时，已发送超时响应");
+            log.warn("message: [{}] 请求处理超时，已发送超时响应", MessageScopedContext.get());
         } catch (Exception e) {
-            log.error("请求处理过程中发生异常", e);
+            log.error("message: [{}] 请求处理过程中发生异常", MessageScopedContext.get(), e);
         }
     }
 
     @SuppressWarnings("all")
     private static void seedMessage(RpcDecoderWrapper msg, Channel channel, SeedMessageHelper helper) {
+        Long messageId = MessageScopedContext.get();
         try {
             Object rpcResponse = RpcResponseFactory.createRpcResponse(msg, DEFAULT_RPC_REMOTE_STRATEGY);
             RpcEncoderWrapper wrapper = RpcEncoderWrapper.builder()
                     .magic(RpcConstant.MAGIC)
                     .version((byte) 1)
-                    .requestId(msg.getProtocol().getRequestId())
+                    .requestId(messageId)
                     .mesType((byte) 1)
                     .codecType((byte) 1)
                     .compressType((byte) 2)
@@ -88,16 +97,16 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcDecoderWr
                     .build();
             if (channel.isActive() && channel.isWritable()) {
                 if (helper == null || helper.getSeed() == (short) 1) {
-                    log.warn("消息已超时，不再响应!");
+                    log.warn("message: [{}] 消息已超时，不再响应!", messageId, msg.getProtocol().getRequestId());
                 } else {
                     channel.writeAndFlush(wrapper);
-                    log.info("响应消息:{}", wrapper);
+                    log.info("message: [{}] 响应消息:{}", messageId, MessageUtils.decodeOctalEscapes(wrapper));
                 }
             } else {
-                log.info("通道不可写或已关闭，不能写数据");
+                log.info("message: [{}] 通道不可写或已关闭，不能写数据", messageId);
             }
         } catch (Exception e) {
-            log.error("异步处理请求失败: {}", msg, e);
+            log.error("message: [{}] 异步处理请求失败: {}", messageId, msg, e);
         } finally {
             helper = null;
         }

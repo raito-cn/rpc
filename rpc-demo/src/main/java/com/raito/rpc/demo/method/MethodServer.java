@@ -13,7 +13,9 @@ import com.raito.rpc.server.annotation.RpcProxyMethod;
 public class MethodServer {
     @RpcProxyMethod
     public String methodList(MethodList list) throws InterruptedException {
-        Thread.sleep(3000);
+        int random = (int)(Math.random() * 10) + 1;
+        Thread.sleep(random * 1000L);
+        list.setRandom(random * 1000);
         return JsonUtils.toJson(list);
     }
 }

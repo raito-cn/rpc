@@ -18,4 +18,6 @@ public class MethodList {
 
     @Value("${methodName:raito}")
     private String methodName;
+
+    private Integer random;
 }

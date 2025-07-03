@@ -129,7 +129,10 @@ public class RpcTestMain {
                                         .compressType((byte) 2)
                                         .body(req)
                                         .build();
-                                ctx.writeAndFlush(wrapper);
+                                for (int i = 0; i < 50; i++) {
+                                    wrapper.setRequestId(new Date().getTime() + i);
+                                    ctx.writeAndFlush(wrapper);
+                                }
                             }
                             @Override
                             public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

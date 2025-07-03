@@ -29,6 +29,7 @@
     </modules>
 
     <properties>
+        <maven.compiler.release>21</maven.compiler.release>
         <rpc.version>v1.0.0</rpc.version>
         <java.version>21</java.version>
         <hutool.version>5.8.38</hutool.version>
@@ -151,6 +152,9 @@
                 <version>3.11.0</version>
                 <configuration>
                     <release>${java.version}</release>
+                    <compilerArgs>
+                        <arg>--enable-preview</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
