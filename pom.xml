@@ -89,6 +89,21 @@
                 <version>${rpc.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.raito.rpc</groupId>
+                <artifactId>rpc-server</artifactId>
+                <version>${rpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.raito.rpc</groupId>
+                <artifactId>rpc-client</artifactId>
+                <version>${rpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.raito.rpc</groupId>
+                <artifactId>rpc-register-api</artifactId>
+                <version>${rpc.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
                 <version>${asm.version}</version>

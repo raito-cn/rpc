@@ -30,7 +30,6 @@
         <dependency>
             <groupId>com.raito.rpc</groupId>
             <artifactId>rpc-server</artifactId>
-            <version>v1.0.0</version>
         </dependency>
     </dependencies>
     <build>
