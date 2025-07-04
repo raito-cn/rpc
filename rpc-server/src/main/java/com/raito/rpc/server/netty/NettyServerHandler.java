@@ -4,12 +4,13 @@ import com.raito.rpc.common.codec.RpcDecoderWrapper;
 import com.raito.rpc.common.codec.RpcEncoderWrapper;
 import com.raito.rpc.common.constant.RpcConstant;
 import com.raito.rpc.common.context.MessageScopedContext;
+import com.raito.rpc.common.thread.AsyncThread;
 import com.raito.rpc.common.util.MessageUtils;
-import com.raito.rpc.server.factory.BeanFactory;
+import com.raito.rpc.common.factory.BeanFactory;
+import com.raito.rpc.server.config.NettyServerConfig;
 import com.raito.rpc.server.helper.SeedMessageHelper;
 import com.raito.rpc.server.strategy.RpcRemoteStrategy;
 import com.raito.rpc.server.strategy.RpcRequestProtoRemoteStrategy;
-import com.raito.rpc.server.thread.AsyncThread;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -39,13 +40,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcDecoderWr
     private static void async(RpcDecoderWrapper msg, Channel channel) {
         // 异步执行 但是需要有一个超时兜底机制，如超过60s 直接返回响应超时，并且就算是用虚拟线程，也需要做netty限流，防止请求过多打爆JVM
         SeedMessageHelper helper = new SeedMessageHelper();
-        Future<?> submit = AsyncThread.getNettyAsyncThread()
+        Future<?> submit = AsyncThread.getRpcAsyncThread()
                 .submit(() -> MessageScopedContext.set(msg.getProtocol().getRequestId(), () -> {
                     seedMessage(msg, channel, helper);
                     return null;
                 }));
         // 超时兜底
-        AsyncThread.getNettyAsyncThread().submit(() ->
+        AsyncThread.getRpcAsyncThread().submit(() ->
                 MessageScopedContext.set(msg.getProtocol().getRequestId(), () -> {
                     checkTimeout(msg, channel, submit, helper);
                     return null;
@@ -54,7 +55,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcDecoderWr
 
     private static void checkTimeout(RpcDecoderWrapper msg, Channel channel, Future<?> submit, SeedMessageHelper helper) {
         try {
-            submit.get(BeanFactory.getBean(AsyncThread.ThreadProperties.class).getTimeout(), TimeUnit.SECONDS);
+            submit.get(BeanFactory.getBean(NettyServerConfig.class).getTimeout(), TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             helper.setSeed((short) 1);
             submit.cancel(true); // 中断任务

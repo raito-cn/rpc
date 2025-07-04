@@ -1,9 +1,10 @@
 package com.raito.rpc.server.manager;
 
+import com.raito.rpc.common.factory.BeanFactory;
+import com.raito.rpc.server.config.NettyServerConfig;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import com.raito.rpc.server.netty.NettyServer;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author cn
@@ -16,9 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 public class NettyServerManager {
     private static NettyServer NETTY_SERVER = new NettyServer();
 
-    @Value("${netty.server.port:9001}")
-    private int port = 9001;
-
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             NETTY_SERVER.jvmShutdown = true;
@@ -29,6 +27,6 @@ public class NettyServerManager {
     }
 
     public void start() throws InterruptedException {
-        NETTY_SERVER.start(port);
+        NETTY_SERVER.start(BeanFactory.getBean(NettyServerConfig.class).getPort());
     }
 }

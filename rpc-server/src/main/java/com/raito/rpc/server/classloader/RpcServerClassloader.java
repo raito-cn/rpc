@@ -1,7 +1,7 @@
 package com.raito.rpc.server.classloader;
 
 import com.raito.rpc.common.exception.ProxyException;
-import com.raito.rpc.server.event.ApplicationStartedListener;
+import com.raito.rpc.common.strategy.ApplicationStartedScanStrategy;
 import com.raito.rpc.server.factory.ProxyGenerator;
 import com.raito.rpc.server.helper.MethodHelper;
 
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 2025/6/27 16:55
  */
-public class RpcClassloader extends ClassLoader {
-    private static final RpcClassloader CLASS_LOADER = new RpcClassloader();
+public class RpcServerClassloader extends ClassLoader {
+    private static final RpcServerClassloader CLASS_LOADER = new RpcServerClassloader();
     private static final Map<String, RpcProxyClass> PROXY_INSTANCES = new ConcurrentHashMap<>();
 
     /**
@@ -46,14 +46,14 @@ public class RpcClassloader extends ClassLoader {
                 futures.add(service.submit(() -> {
                     try {
                         byte[] proxyBytes = ProxyGenerator.generateProxyClass(server, methods);
-                        String classFile = "proxy/" + ProxyGenerator.RPC_PROXY_CLASS_INTERNAL_NAME + server + "$Proxy" + ".class";
-                        Path workingDir = ApplicationStartedListener.realUrl; // 当前 JVM 工作目录
+                        String classFile = "proxy/%s%s$Proxy.class".formatted(ProxyGenerator.RPC_PROXY_CLASS_INTERNAL_NAME, server);
+                        Path workingDir = ApplicationStartedScanStrategy.realUrl; // 当前 JVM 工作目录
                         Path path = Paths.get(workingDir.toString(), classFile);
                         Files.createDirectories(path.getParent());
                         Files.write(path, proxyBytes);
 
                         Class<? extends RpcProxyClass> proxyClass =
-                                CLASS_LOADER.defineClass(ProxyGenerator.RPC_PROXY_CLASS_INTERNAL_JVM_NAME + server + "$Proxy", proxyBytes);
+                                CLASS_LOADER.defineClass("%s%s$Proxy".formatted(ProxyGenerator.RPC_PROXY_CLASS_INTERNAL_JVM_NAME, server), proxyBytes);
                         RpcProxyClass proxyInstance = proxyClass
                                 .getConstructor()
                                 .newInstance();

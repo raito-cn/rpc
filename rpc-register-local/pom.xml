@@ -6,7 +6,7 @@
         <groupId>com.raito.rpc</groupId>
         <artifactId>parent</artifactId>
         <version>v1.0.0</version>
-        <relativePath />
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>rpc-register-local</artifactId>

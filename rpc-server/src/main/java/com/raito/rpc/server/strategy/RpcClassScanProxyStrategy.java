@@ -1,10 +1,11 @@
 package com.raito.rpc.server.strategy;
 
+import com.raito.rpc.common.strategy.ScanStrategy;
 import com.raito.rpc.server.annotation.RpcProxy;
 import com.raito.rpc.server.annotation.RpcProxyMethod;
+import com.raito.rpc.server.classloader.RpcServerClassloader;
 import com.raito.rpc.server.helper.MethodHelper;
-import lombok.Data;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
@@ -17,11 +18,9 @@ import java.util.List;
  * @since 2025/6/30 11:32
  * @version 1.0
  */
-@Component
-@Data
-public class RpcClassScannerProxyStrategy implements RpcClassScannerStrategy<RpcProxy> {
+@Slf4j
+public class RpcClassScanProxyStrategy extends ScanStrategy {
     public static final List<MethodHelper> methodHelpers = Collections.synchronizedList(new LinkedList<>());
-
 
     @Override
     public void process(Class<?> clazz) {
@@ -45,7 +44,11 @@ public class RpcClassScannerProxyStrategy implements RpcClassScannerStrategy<Rpc
     }
 
     @Override
-    public Class<RpcProxy> annotationType() {
-        return RpcProxy.class;
+    public Runnable after() {
+        return () -> {
+            List<MethodHelper> methodHelpers = RpcClassScanProxyStrategy.methodHelpers;
+            RpcServerClassloader.register(methodHelpers);
+            log.info("rpc-server端动态代理调用类完成!");
+        };
     }
 }

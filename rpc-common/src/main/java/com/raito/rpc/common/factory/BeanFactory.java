@@ -1,4 +1,4 @@
-package com.raito.rpc.server.factory;
+package com.raito.rpc.common.factory;
 
 import com.raito.rpc.common.exception.BeanCreateException;
 
@@ -15,7 +15,7 @@ public class BeanFactory {
     @SuppressWarnings("unchecked")
     public static <T> T getBean(Class<T> originalClass) {
         try {
-            return (T) instances.computeIfAbsent(originalClass, clazz -> {
+            return (T) instances.computeIfAbsent(originalClass, _ -> {
                 try {
                     if (SpringContextHolder.getContext() != null) {
                         return SpringContextHolder.getContext().getBean(originalClass);

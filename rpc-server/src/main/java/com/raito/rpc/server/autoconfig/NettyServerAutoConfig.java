@@ -1,10 +1,9 @@
 package com.raito.rpc.server.autoconfig;
 
-import com.raito.rpc.server.event.ApplicationStartedListener;
-import com.raito.rpc.server.factory.SpringContextHolder;
 import com.raito.rpc.server.helper.NettyStartHelper;
 import com.raito.rpc.server.manager.NettyServerManager;
-import com.raito.rpc.server.strategy.RpcClassScannerProxyStrategy;
+import com.raito.rpc.server.strategy.RpcClassScanProxyStrategy;
+import com.raito.rpc.server.strategy.StartNettyServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -27,17 +26,12 @@ public class NettyServerAutoConfig {
     }
 
     @Bean
-    public ApplicationStartedListener applicationStartedListener() {
-        return new ApplicationStartedListener();
+    public StartNettyServer startNettyServer() {
+        return new StartNettyServer();
     }
 
     @Bean
-    public SpringContextHolder springContextHolder() {
-        return new SpringContextHolder();
-    }
-
-    @Bean
-    public RpcClassScannerProxyStrategy rpcClassScannerProxyStrategy() {
-        return new RpcClassScannerProxyStrategy();
+    public RpcClassScanProxyStrategy rpcClassScannerProxyStrategy() {
+        return new RpcClassScanProxyStrategy();
     }
 }

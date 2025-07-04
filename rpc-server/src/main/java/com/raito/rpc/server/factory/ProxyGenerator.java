@@ -1,6 +1,7 @@
 package com.raito.rpc.server.factory;
 
 import com.raito.rpc.common.exception.ProxyException;
+import com.raito.rpc.common.factory.BeanFactory;
 import com.raito.rpc.common.util.JsonUtils;
 import com.raito.rpc.server.classloader.RpcProxyClass;
 import com.raito.rpc.server.helper.MethodHelper;
@@ -16,12 +17,13 @@ import java.util.Map;
  * @author raito
  * @since 2025/6/28
  */
+@SuppressWarnings("SpellCheckingInspection")
 public class ProxyGenerator {
     public static final String RPC_PROXY_CLASS_INTERNAL_NAME = "com/raito/rpc/server/proxy/";
     public static final String RPC_PROXY_CLASS_INTERNAL_JVM_NAME = "com.raito.rpc.server.proxy.";
 
     public static byte[] generateProxyClass(String server, List<MethodHelper> helpers) {
-        String internalClassName = RPC_PROXY_CLASS_INTERNAL_NAME + server + "$Proxy";
+        String internalClassName = "%s%s$Proxy".formatted(RPC_PROXY_CLASS_INTERNAL_NAME, server);
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         // 定义类：public class XxxProxy extends ProxyClass
@@ -189,7 +191,7 @@ public class ProxyGenerator {
         } else if (type == char.class) {
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;", false);
         } else {
-            throw new IllegalArgumentException("Unsupported primitive type: " + type);
+            throw new IllegalArgumentException("Unsupported primitive type: %s".formatted(type));
         }
     }
 }

@@ -5,6 +5,4 @@ spring:
 netty:
   server:
     port: 9090
-  async:
-    thread:
-      timeout: 10
+    timeout: 10
